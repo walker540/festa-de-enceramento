@@ -896,6 +896,97 @@
             opacity: 0.5;
             font-size: 0.8rem;
         }
+
+        /* NOVA INSCRIÇÃO - Notificação ao vivo */
+        .new-registration-alert {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+            padding: 20px 25px;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            z-index: 9999;
+            display: none;
+            animation: slideInRight 0.5s ease, pulse 2s infinite;
+            max-width: 350px;
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+
+        .new-registration-alert.show {
+            display: block;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .new-registration-alert h4 {
+            margin: 0 0 8px 0;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .new-registration-alert p {
+            margin: 0;
+            font-size: 0.9rem;
+            opacity: 0.95;
+        }
+
+        .new-registration-alert .close-alert {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+
+        .new-registration-alert .close-alert:hover {
+            opacity: 1;
+        }
+
+        /* Indicador de sincronização ao vivo */
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-left: 15px;
+        }
+
+        .live-indicator::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
     </style>
 </head>
 <body>
@@ -906,6 +997,13 @@
         <span></span>
         <span></span>
         <span></span>
+    </div>
+
+    <!-- NOTIFICAÇÃO DE NOVA INSCRIÇÃO -->
+    <div id="newRegistrationAlert" class="new-registration-alert">
+        <button class="close-alert" onclick="closeNewRegistrationAlert()">×</button>
+        <h4><i class="fas fa-bell"></i> Nova Inscrição!</h4>
+        <p id="newRegistrationText">Alguém acabou de se inscrever</p>
     </div>
 
     <div class="container">
@@ -1084,6 +1182,7 @@
                 <h2 class="admin-title">
                     <i class="fas fa-cog"></i>
                     Painel de Administração
+                    <span class="live-indicator">Sincronização em Tempo Real</span>
                 </h2>
                 <div class="admin-stats">
                     <div class="stat-card">
@@ -1264,11 +1363,105 @@
         let registrations = JSON.parse(localStorage.getItem('peniel_registrations')) || [];
         let deleteId = null;
         let currentSort = { field: null, direction: 'asc' };
+        let isAdminPanelOpen = false;
+        let lastKnownCount = registrations.length;
+        let syncInterval = null;
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             updateParticipantCount();
+            startRealtimeSync();
+            
+            // Escutar mudanças no localStorage de outras abas/janelas
+            window.addEventListener('storage', handleStorageChange);
         });
+
+        // SINCRONIZAÇÃO EM TEMPO REAL
+        function startRealtimeSync() {
+            // Verificar a cada 3 segundos se há novas inscrições
+            syncInterval = setInterval(() => {
+                checkForNewRegistrations();
+            }, 3000);
+        }
+
+        // Verificar novas inscrições
+        function checkForNewRegistrations() {
+            const currentData = JSON.parse(localStorage.getItem('peniel_registrations')) || [];
+            const currentCount = currentData.length;
+            
+            // Se há mais inscrições do que sabíamos
+            if (currentCount > lastKnownCount) {
+                const newRegistrations = currentData.slice(lastKnownCount);
+                
+                // Atualizar dados locais
+                registrations = currentData;
+                lastKnownCount = currentCount;
+                
+                // Se estiver no painel admin, atualizar a tabela
+                if (isAdminPanelOpen) {
+                    loadRegistrations();
+                    updateStats();
+                    showNewRegistrationNotification(newRegistrations);
+                }
+                
+                // Atualizar contador na página principal também
+                updateParticipantCount();
+            } else if (currentCount !== lastKnownCount || JSON.stringify(registrations) !== JSON.stringify(currentData)) {
+                // Se houve alterações (edições, exclusões, pagamentos)
+                registrations = currentData;
+                lastKnownCount = currentCount;
+                
+                if (isAdminPanelOpen) {
+                    loadRegistrations();
+                    updateStats();
+                }
+                updateParticipantCount();
+            }
+        }
+
+        // Notificação de nova inscrição
+        function showNewRegistrationNotification(newRegs) {
+            const alert = document.getElementById('newRegistrationAlert');
+            const text = document.getElementById('newRegistrationText');
+            
+            if (newRegs.length === 1) {
+                const reg = newRegs[0];
+                text.innerHTML = `<strong>${escapeHtml(reg.nome)}</strong> (${escapeHtml(reg.turma)}) acabou de se inscrever!`;
+            } else {
+                text.innerHTML = `<strong>${newRegs.length} novas inscrições</strong> foram adicionadas!`;
+            }
+            
+            alert.classList.add('show');
+            
+            // Som de notificação (opcional - descomente se quiser)
+            // playNotificationSound();
+            
+            // Auto-fechar após 8 segundos
+            setTimeout(() => {
+                closeNewRegistrationAlert();
+            }, 8000);
+        }
+
+        function closeNewRegistrationAlert() {
+            document.getElementById('newRegistrationAlert').classList.remove('show');
+        }
+
+        // Evento storage - quando outra aba/janela modifica o localStorage
+        function handleStorageChange(e) {
+            if (e.key === 'peniel_registrations') {
+                checkForNewRegistrations();
+            }
+        }
+
+        // Broadcast Channel para sincronização entre abas (API moderna)
+        if (typeof BroadcastChannel !== 'undefined') {
+            const bc = new BroadcastChannel('peniel_sync');
+            bc.onmessage = function(event) {
+                if (event.data.type === 'new_registration') {
+                    checkForNewRegistrations();
+                }
+            };
+        }
 
         // Format date and time
         function formatDateTime(dateString) {
@@ -1308,18 +1501,32 @@
                 data: now.toISOString()
             };
 
+            // Adicionar nova inscrição
             registrations.push(registration);
             localStorage.setItem('peniel_registrations', JSON.stringify(registrations));
             
+            // Notificar outras abas via BroadcastChannel
+            if (typeof BroadcastChannel !== 'undefined') {
+                const bc = new BroadcastChannel('peniel_sync');
+                bc.postMessage({ type: 'new_registration', data: registration });
+            }
+            
+            // Atualizar timestamp de última modificação
+            localStorage.setItem('peniel_last_update', Date.now().toString());
+            
             // Show success message
-            alert('Inscrição realizada com sucesso! 🎉\\n\\nData: ' + formatDateTime(now.toISOString()).date + ' às ' + formatDateTime(now.toISOString()).time);
+            alert('Inscrição realizada com sucesso! 🎉\n\nData: ' + formatDateTime(now.toISOString()).date + ' às ' + formatDateTime(now.toISOString()).time);
             e.target.reset();
             updateParticipantCount();
+            
+            // Atualizar contador interno
+            lastKnownCount = registrations.length;
         });
 
         // Update participant count
         function updateParticipantCount() {
-            document.getElementById('participantCount').textContent = registrations.length + ' inscritos';
+            const currentData = JSON.parse(localStorage.getItem('peniel_registrations')) || [];
+            document.getElementById('participantCount').textContent = currentData.length + ' inscritos';
         }
 
         // Login Modal
@@ -1351,6 +1558,12 @@
         function showAdminPanel() {
             document.getElementById('mainPage').style.display = 'none';
             document.getElementById('adminPanel').classList.add('active');
+            isAdminPanelOpen = true;
+            
+            // Sincronizar imediatamente ao abrir
+            registrations = JSON.parse(localStorage.getItem('peniel_registrations')) || [];
+            lastKnownCount = registrations.length;
+            
             loadRegistrations();
             updateStats();
         }
@@ -1359,6 +1572,7 @@
         function logout() {
             document.getElementById('mainPage').style.display = 'block';
             document.getElementById('adminPanel').classList.remove('active');
+            isAdminPanelOpen = false;
             updateParticipantCount();
         }
 
@@ -1581,8 +1795,15 @@
             if (reg) {
                 reg.pago = !reg.pago;
                 localStorage.setItem('peniel_registrations', JSON.stringify(registrations));
+                localStorage.setItem('peniel_last_update', Date.now().toString());
                 loadRegistrations();
                 updateStats();
+                
+                // Notificar outras abas
+                if (typeof BroadcastChannel !== 'undefined') {
+                    const bc = new BroadcastChannel('peniel_sync');
+                    bc.postMessage({ type: 'update' });
+                }
             }
         }
 
@@ -1601,9 +1822,17 @@
             if (deleteId) {
                 registrations = registrations.filter(r => r.id !== deleteId);
                 localStorage.setItem('peniel_registrations', JSON.stringify(registrations));
+                localStorage.setItem('peniel_last_update', Date.now().toString());
                 loadRegistrations();
                 updateStats();
+                lastKnownCount = registrations.length;
                 closeDeleteModal();
+                
+                // Notificar outras abas
+                if (typeof BroadcastChannel !== 'undefined') {
+                    const bc = new BroadcastChannel('peniel_sync');
+                    bc.postMessage({ type: 'update' });
+                }
             }
         }
 
@@ -1644,8 +1873,15 @@
                 reg.observacoes = document.getElementById('editObservacoes').value;
                 
                 localStorage.setItem('peniel_registrations', JSON.stringify(registrations));
+                localStorage.setItem('peniel_last_update', Date.now().toString());
                 loadRegistrations();
                 closeEditModal();
+                
+                // Notificar outras abas
+                if (typeof BroadcastChannel !== 'undefined') {
+                    const bc = new BroadcastChannel('peniel_sync');
+                    bc.postMessage({ type: 'update' });
+                }
             }
         });
 

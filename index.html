@@ -1421,6 +1421,15 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
+        //conetar a base de dados
+        const db = getDatabase(app);
+
+        const listaRef = ref(db, "inscritos");
+        onValue(listaRef, (snapshot) =>{
+            const dados = snapshot.val();
+            console.log(dados);
+        });
+
         // Inicializar Firebase
         let database;
         let registrationsRef;

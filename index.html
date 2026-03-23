@@ -1,0 +1,1509 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Festa de Encerramento - Escola Peniel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --accent: #f59e0b;
+            --dark: #1e1b4b;
+            --light: #f8fafc;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --glass: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #1e1b4b 100%);
+            min-height: 100vh;
+            color: var(--light);
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .bg-animation span {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: var(--glass);
+            border-radius: 50%;
+            animation: float 15s infinite;
+            backdrop-filter: blur(5px);
+        }
+
+        .bg-animation span:nth-child(1) { top: 10%; left: 10%; animation-delay: 0s; }
+        .bg-animation span:nth-child(2) { top: 20%; left: 80%; animation-delay: 2s; }
+        .bg-animation span:nth-child(3) { top: 60%; left: 40%; animation-delay: 4s; }
+        .bg-animation span:nth-child(4) { top: 80%; left: 10%; animation-delay: 6s; }
+        .bg-animation span:nth-child(5) { top: 40%; left: 90%; animation-delay: 8s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.5; }
+            50% { transform: translateY(-100px) rotate(180deg); opacity: 0.8; }
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            padding: 40px 0;
+            animation: fadeInDown 1s ease;
+        }
+
+        .badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--secondary), var(--accent));
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #fff, #a5b4fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .school-name {
+            font-size: 1.5rem;
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* Main Content Grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 900px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Cards */
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: fadeInUp 1s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.6);
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title i {
+            color: var(--accent);
+        }
+
+        /* Event Info */
+        .event-description {
+            font-size: 1rem;
+            line-height: 1.8;
+            margin-bottom: 25px;
+            opacity: 0.95;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .info-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .info-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.02);
+        }
+
+        .info-label {
+            font-size: 0.85rem;
+            opacity: 0.7;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .price-tag {
+            background: linear-gradient(135deg, var(--success), #059669);
+            padding: 20px;
+            border-radius: 16px;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .price-tag .amount {
+            font-size: 2.5rem;
+            font-weight: 800;
+        }
+
+        .price-tag .currency {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        /* Features List */
+        .features-list {
+            list-style: none;
+        }
+
+        .features-list li {
+            padding: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .features-list li:last-child {
+            border-bottom: none;
+        }
+
+        .features-list i {
+            color: var(--success);
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .form-group label .required {
+            color: var(--secondary);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        select.form-control {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 20px;
+        }
+
+        select.form-control option {
+            background: var(--dark);
+            color: #fff;
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Radio Group */
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .radio-option {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .radio-option input[type="radio"] {
+            display: none;
+        }
+
+        .radio-option label {
+            display: block;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .radio-option input[type="radio"]:checked + label {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-color: var(--primary);
+            transform: scale(1.02);
+        }
+
+        /* Submit Button */
+        .btn-submit {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        /* Admin Button */
+        .admin-access {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .btn-admin {
+            padding: 12px 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-admin:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: var(--accent);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal {
+            background: linear-gradient(135deg, #1e1b4b, #312e81);
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-close:hover {
+            opacity: 1;
+        }
+
+        /* Admin Panel */
+        .admin-panel {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .admin-panel.active {
+            display: block;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .admin-title {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .admin-stats {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            background: var(--glass);
+            padding: 15px 25px;
+            border-radius: 12px;
+            text-align: center;
+            min-width: 120px;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+
+        /* Table */
+        .table-container {
+            background: var(--glass);
+            border-radius: 16px;
+            overflow: hidden;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            padding: 12px 10px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        th {
+            background: rgba(255, 255, 255, 0.05);
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .status-pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+
+        .status-paid {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 5px;
+        }
+
+        .btn-action {
+            padding: 6px 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-edit {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: #fff;
+        }
+
+        .btn-edit:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-delete {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: #fff;
+        }
+
+        .btn-delete:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-pay {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+        }
+
+        .btn-pay:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-pay.paid {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+            cursor: not-allowed;
+        }
+
+        /* Date/Time Display */
+        .datetime-display {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.7);
+            white-space: nowrap;
+        }
+
+        .datetime-display .date {
+            font-weight: 500;
+        }
+
+        .datetime-display .time {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        /* Back Button */
+        .btn-back {
+            padding: 12px 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .btn-back:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            margin-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-text {
+            opacity: 0.8;
+            font-size: 0.95rem;
+        }
+
+        .stars {
+            color: var(--accent);
+            margin-top: 10px;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Motivation Text Display */
+        .motivation-display {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 8px;
+            border-radius: 6px;
+            font-style: italic;
+            font-size: 0.85rem;
+            max-width: 150px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .motivation-display:hover {
+            white-space: normal;
+            overflow: visible;
+            max-width: 300px;
+            z-index: 10;
+            position: relative;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            opacity: 0.3;
+            margin-bottom: 20px;
+        }
+
+        .empty-state p {
+            opacity: 0.7;
+        }
+
+        /* Search Bar */
+        .search-bar {
+            margin-bottom: 20px;
+        }
+
+        .search-bar input {
+            width: 100%;
+            max-width: 400px;
+            padding: 12px 20px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .search-bar input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* Confirmation Modal */
+        .confirm-modal {
+            text-align: center;
+        }
+
+        .confirm-modal i {
+            font-size: 3rem;
+            color: var(--danger);
+            margin-bottom: 20px;
+        }
+
+        .confirm-modal p {
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+        }
+
+        .confirm-btns {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .btn-confirm {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-confirm-yes {
+            background: linear-gradient(135deg, var(--danger), #dc2626);
+            color: #fff;
+        }
+
+        .btn-confirm-no {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        .btn-confirm:hover {
+            transform: scale(1.05);
+        }
+
+        /* Edit Modal */
+        .edit-form {
+            text-align: left;
+        }
+
+        .edit-form .form-group {
+            margin-bottom: 15px;
+        }
+
+        .edit-form label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .edit-form input,
+        .edit-form select,
+        .edit-form textarea {
+            width: 100%;
+            padding: 10px 15px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .edit-form input:focus,
+        .edit-form select:focus,
+        .edit-form textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .edit-form textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        /* Sortable Headers */
+        th.sortable {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        th.sortable:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        th.sortable::after {
+            content: ' ⇅';
+            opacity: 0.5;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Animation -->
+    <div class="bg-animation">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <div class="container">
+        <!-- Main Page -->
+        <div id="mainPage">
+            <header>
+                <div class="badge">🎉 50 BOYS</div>
+                <h1>Festa de Encerramento &</h1>
+                <h1>Baile do Ano Letivo</h1>
+                <p class="subtitle">Traga o seu par e venha dançar connosco! Cada um com o seu par para uma noite inesquecível.</p>
+                <p class="school-name">Escola Evangélica Peniel</p>
+            </header>
+
+            <div class="main-grid">
+                <!-- Event Info Card -->
+                <div class="card">
+                    <h2 class="card-title">
+                        <i class="fas fa-info-circle"></i>
+                        Informações do Evento
+                    </h2>
+                    
+                    <p class="event-description">
+                        🎉 <strong>Celebração de Fim de Ano Letivo & Baile</strong><br><br>
+                        Estamos organizando uma festa especial para celebrar o encerramento do ano letivo na Escola Evangélica Peniel. Este ano temos uma novidade especial: o <strong>Baile do Ano Letivo</strong> onde cada participante poderá trazer o seu par para uma noite de dança e diversão!
+                    </p>
+
+                    <div class="price-tag">
+                        <div class="amount">8.000 XOF</div>
+                        <div class="currency">Por pessoa</div>
+                    </div>
+
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">📅 Data da Festa</div>
+                            <div class="info-value">25 de Junho 2026</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">✅ Confirmação até</div>
+                            <div class="info-value">10 de Junho 2026</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">💳 Pagamento até</div>
+                            <div class="info-value">15 de Junho 2026</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">👥 Participantes</div>
+                            <div class="info-value" id="participantCount">0 inscritos</div>
+                        </div>
+                    </div>
+
+                    <h3 style="margin-bottom: 15px; font-size: 1.1rem;">O que esperar:</h3>
+                    <ul class="features-list">
+                        <li><i class="fas fa-music"></i> Música e entretenimento ao vivo</li>
+                        <li><i class="fas fa-heart"></i> Baile com pares - cada um com o seu par</li>
+                        <li><i class="fas fa-trophy"></i> Concurso de melhor casal de dança</li>
+                        <li><i class="fas fa-glass-cheers"></i> Bar completo: bebidas alcoólicas e não alcoólicas</li>
+                        <li><i class="fas fa-utensils"></i> Refeições especiais </li>
+                        <li><i class="fas fa-camera"></i> Fotografia profissional do evento</li>
+                        <li><i class="fas fa-users"></i> Convívio entre amigos e colegas</li>
+                        <li><i class="fas fa-gift"></i> Surpresas e momentos especiais</li>
+                    </ul>
+
+                    <p style="margin-top: 20px; font-size: 0.9rem; opacity: 0.8;">
+                        <i class="fas fa-info-circle"></i> Nota: Para participar no baile, confirme abaixo se virá com par e escolha sua preferência de bebida.
+                    </p>
+                </div>
+
+                <!-- Registration Form -->
+                <div class="card">
+                    <h2 class="card-title">
+                        <i class="fas fa-user-plus"></i>
+                        Inscrição
+                    </h2>
+
+                    <form id="registrationForm">
+                        <div class="form-group">
+                            <label>Nome Completo <span class="required">*</span></label>
+                            <input type="text" class="form-control" name="nome" required placeholder="Digite seu nome completo">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Sala/Turma <span class="required">*</span></label>
+                            <select class="form-control" name="turma" required>
+                    <option value="">Selecione sua turma</option>
+                    <option value="1º Ano">1º Ano</option>
+                    <option value="2º Ano">2º Ano</option>
+                    <option value="3º Ano">3º Ano</option>
+                    <option value="4º Ano">4º Ano</option>
+                    <option value="5º Ano">5º Ano</option>
+                    <option value="6º Ano">6º Ano</option>
+                    <option value="7º Ano">7º Ano</option>
+                    <option value="8º Ano">8º Ano</option>
+                    <option value="9º Ano">9º Ano</option>
+                    <option value="10º Ano">10º Ano</option>
+                    <option value="11º Ano">11º Ano</option>
+                    <option value="12º Ano">12º Ano</option>
+                    <option value="Professor/Funcionário">Professor/Funcionário</option>
+                    <option value="Convidado Especial">Convidado Especial</option>
+                </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Número de Telefone (WhatsApp) <span class="required">*</span></label>
+                            <input type="tel" class="form-control" name="telefone" required placeholder="Ex: +245 955 123 456">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Vai participar no baile com par? <span class="required">*</span></label>
+                            <div class="radio-group">
+                                <div class="radio-option">
+                                    <input type="radio" id="comPar" name="comPar" value="sim" required>
+                                    <label for="comPar"><i class="fas fa-heart"></i> Sim, com par</label>
+                                </div>
+                                <div class="radio-option">
+                                    <input type="radio" id="semPar" name="comPar" value="nao" required>
+                                    <label for="semPar"><i class="fas fa-user"></i> Não, vou solo</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Preferência de Bebida <span class="required">*</span></label>
+                            <select class="form-control" name="bebida" required>
+                                <option value="">Selecione uma opção</option>
+                                <option value="Sucos e Refrigerante">Sucos e Refrigerante</option>
+                                <option value="Bebidas alcoolicas">Bebidas alcoólicas</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Motivação para Participar</label>
+                            <textarea class="form-control" name="motivacao" placeholder="Conte-nos por que quer participar desta festa..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Outras Informações / Observações</label>
+                            <textarea class="form-control" name="observacoes" placeholder="Alguma informação adicional ou restrição alimentar..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn-submit">
+                            <i class="fas fa-paper-plane"></i>
+                            Confirmar Inscrição
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="admin-access">
+                <button class="btn-admin" onclick="openLoginModal()">
+                    <i class="fas fa-lock"></i>
+                    Acesso Administrador
+                </button>
+            </div>
+
+            <footer>
+                <p class="footer-text">Organizado com dedicação e excelência</p>
+                <div class="stars">⭐⭐⭐⭐⭐</div>
+            </footer>
+        </div>
+
+        <!-- Admin Panel -->
+        <div id="adminPanel" class="admin-panel">
+            <button class="btn-back" onclick="logout()">
+                <i class="fas fa-arrow-left"></i>
+                Voltar ao Site
+            </button>
+
+            <div class="admin-header">
+                <h2 class="admin-title">
+                    <i class="fas fa-cog"></i>
+                    Painel de Administração
+                </h2>
+                <div class="admin-stats">
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalInscritos">0</div>
+                        <div class="stat-label">Total Inscritos</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalPagos">0</div>
+                        <div class="stat-label">Pagamentos</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalPendentes">0</div>
+                        <div class="stat-label">Pendentes</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="🔍 Pesquisar por nome, turma ou telefone..." onkeyup="searchRegistrations()">
+            </div>
+
+            <div class="card">
+                <h3 class="card-title">
+                    <i class="fas fa-list"></i>
+                    Lista de Inscrições
+                </h3>
+                <div class="table-container">
+                    <table id="registrationsTable">
+                        <thead>
+                            <tr>
+                                <th class="sortable" onclick="sortTable('nome')">Nome</th>
+                                <th>Turma</th>
+                                <th>Telefone</th>
+                                <th>Com Par</th>
+                                <th>Bebida</th>
+                                <th>Motivação</th>
+                                <th class="sortable" onclick="sortTable('data')">Data/Hora</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="registrationsTableBody">
+                            <!-- Registrations will be loaded here -->
+                        </tbody>
+                    </table>
+                    <div id="emptyState" class="empty-state" style="display: none;">
+                        <i class="fas fa-inbox"></i>
+                        <p>Nenhuma inscrição encontrada</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal-overlay">
+        <div class="modal">
+            <h3 class="modal-title">
+                <i class="fas fa-lock"></i>
+                Acesso Administrador
+            </h3>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" class="form-control" id="adminEmail" required placeholder="Digite o email">
+                </div>
+                <div class="form-group">
+                    <label>Senha</label>
+                    <input type="password" class="form-control" id="adminPassword" required placeholder="Digite a senha">
+                </div>
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Entrar
+                </button>
+            </form>
+            <button class="modal-close" onclick="closeLoginModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal-overlay">
+        <div class="modal confirm-modal">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h3 class="modal-title">Confirmar Exclusão</h3>
+            <p>Tem certeza que deseja excluir esta inscrição? Esta ação não pode ser desfeita.</p>
+            <div class="confirm-btns">
+                <button class="btn-confirm btn-confirm-yes" onclick="confirmDelete()">
+                    <i class="fas fa-trash"></i> Sim, Excluir
+                </button>
+                <button class="btn-confirm btn-confirm-no" onclick="closeDeleteModal()">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal-overlay">
+        <div class="modal">
+            <h3 class="modal-title">
+                <i class="fas fa-edit"></i>
+                Editar Inscrição
+            </h3>
+            <form id="editForm" class="edit-form">
+                <input type="hidden" id="editId">
+                <div class="form-group">
+                    <label>Nome Completo</label>
+                    <input type="text" id="editNome" required>
+                </div>
+                <div class="form-group">
+                    <label>Turma</label>
+                    <select id="editTurma" required>
+                    <option value="">Selecione sua turma</option>
+                    <option value="1º Ano">1º Ano</option>
+                    <option value="2º Ano">2º Ano</option>
+                    <option value="3º Ano">3º Ano</option>
+                    <option value="4º Ano">4º Ano</option>
+                    <option value="5º Ano">5º Ano</option>
+                    <option value="6º Ano">6º Ano</option>
+                    <option value="7º Ano">7º Ano</option>
+                    <option value="8º Ano">8º Ano</option>
+                    <option value="9º Ano">9º Ano</option>
+                    <option value="10º Ano">10º Ano</option>
+                    <option value="11º Ano">11º Ano</option>
+                    <option value="12º Ano">12º Ano</option>
+                    <option value="Professor/Funcionário">Professor/Funcionário</option>
+                    <option value="Convidado Especial">Convidado Especial</option>
+                </select>
+                </div>
+                <div class="form-group">
+                    <label>Telefone</label>
+                    <input type="tel" id="editTelefone" required>
+                </div>
+                <div class="form-group">
+                    <label>Com Par</label>
+                    <select id="editComPar" required>
+                        <option value="sim">Sim</option>
+                        <option value="nao">Não</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Bebida</label>
+                    <select id="editBebida" required>
+                        <option value="Sucos e Refrigerante">Sucos e Refrigerante</option>
+                        <option value="Bebidas alcoolicas">Bebidas alcoólicas</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Motivação</label>
+                    <textarea id="editMotivacao"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Observações</label>
+                    <textarea id="editObservacoes"></textarea>
+                </div>
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-save"></i>
+                    Salvar Alterações
+                </button>
+            </form>
+            <button class="modal-close" onclick="closeEditModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Admin credentials
+        const ADMIN_EMAIL = 'walkerallan279@gmail.com';
+        const ADMIN_PASSWORD = 'walker54';
+
+        // Data storage
+        let registrations = JSON.parse(localStorage.getItem('peniel_registrations')) || [];
+        let deleteId = null;
+        let currentSort = { field: null, direction: 'asc' };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateParticipantCount();
+        });
+
+        // Format date and time
+        function formatDateTime(dateString) {
+            if (!dateString) return '-';
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) return dateString;
+            
+            const day = date.getDate().toString().padStart(2, '0');
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const year = date.getFullYear();
+            const hours = date.getHours().toString().padStart(2, '0');
+            const minutes = date.getMinutes().toString().padStart(2, '0');
+            
+            return {
+                date: `${day}/${month}/${year}`,
+                time: `${hours}:${minutes}`,
+                full: date.toISOString()
+            };
+        }
+
+        // Registration Form Submit
+        document.getElementById('registrationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const now = new Date();
+            const formData = new FormData(e.target);
+            const registration = {
+                id: Date.now(),
+                nome: formData.get('nome'),
+                turma: formData.get('turma'),
+                telefone: formData.get('telefone'),
+                comPar: formData.get('comPar'),
+                bebida: formData.get('bebida'),
+                motivacao: formData.get('motivacao') || '',
+                observacoes: formData.get('observacoes') || '',
+                pago: false,
+                data: now.toISOString()
+            };
+
+            registrations.push(registration);
+            localStorage.setItem('peniel_registrations', JSON.stringify(registrations));
+            
+            // Show success message
+            alert('Inscrição realizada com sucesso! 🎉\\n\\nData: ' + formatDateTime(now.toISOString()).date + ' às ' + formatDateTime(now.toISOString()).time);
+            e.target.reset();
+            updateParticipantCount();
+        });
+
+        // Update participant count
+        function updateParticipantCount() {
+            document.getElementById('participantCount').textContent = registrations.length + ' inscritos';
+        }
+
+        // Login Modal
+        function openLoginModal() {
+            document.getElementById('loginModal').classList.add('active');
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginModal').classList.remove('active');
+            document.getElementById('loginForm').reset();
+        }
+
+        // Login Form Submit
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('adminEmail').value;
+            const password = document.getElementById('adminPassword').value;
+
+            if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+                closeLoginModal();
+                showAdminPanel();
+            } else {
+                alert('Email ou senha incorretos!');
+            }
+        });
+
+        // Show Admin Panel
+        function showAdminPanel() {
+            document.getElementById('mainPage').style.display = 'none';
+            document.getElementById('adminPanel').classList.add('active');
+            loadRegistrations();
+            updateStats();
+        }
+
+        // Logout
+        function logout() {
+            document.getElementById('mainPage').style.display = 'block';
+            document.getElementById('adminPanel').classList.remove('active');
+            updateParticipantCount();
+        }
+
+        // Sort Table
+        function sortTable(field) {
+            if (currentSort.field === field) {
+                currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSort.field = field;
+                currentSort.direction = 'asc';
+            }
+
+            registrations.sort((a, b) => {
+                let valA = a[field] || '';
+                let valB = b[field] || '';
+                
+                if (field === 'data') {
+                    valA = new Date(valA).getTime();
+                    valB = new Date(valB).getTime();
+                } else {
+                    valA = valA.toString().toLowerCase();
+                    valB = valB.toString().toLowerCase();
+                }
+
+                if (valA < valB) return currentSort.direction === 'asc' ? -1 : 1;
+                if (valA > valB) return currentSort.direction === 'asc' ? 1 : -1;
+                return 0;
+            });
+
+            loadRegistrations();
+        }
+
+        // Load Registrations Table
+        function loadRegistrations() {
+            const tbody = document.getElementById('registrationsTableBody');
+            const emptyState = document.getElementById('emptyState');
+            
+            if (registrations.length === 0) {
+                tbody.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            emptyState.style.display = 'none';
+            tbody.innerHTML = registrations.map(reg => {
+                const dateTime = formatDateTime(reg.data);
+                return `
+                <tr>
+                    <td><strong>${escapeHtml(reg.nome)}</strong></td>
+                    <td>${escapeHtml(reg.turma)}</td>
+                    <td>${escapeHtml(reg.telefone)}</td>
+                    <td>${reg.comPar === 'sim' ? '<i class="fas fa-heart" style="color: var(--secondary);"></i> Sim' : '<i class="fas fa-user" style="color: var(--accent);"></i> Não'}</td>
+                    <td>${escapeHtml(reg.bebida)}</td>
+                    <td>
+                        ${reg.motivacao ? `<div class="motivation-display" title="${escapeHtml(reg.motivacao)}">${escapeHtml(reg.motivacao)}</div>` : '-'}
+                    </td>
+                    <td>
+                        <div class="datetime-display">
+                            <div class="date"><i class="fas fa-calendar"></i> ${dateTime.date}</div>
+                            <div class="time"><i class="fas fa-clock"></i> ${dateTime.time}</div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="status-badge ${reg.pago ? 'status-paid' : 'status-pending'}">
+                            ${reg.pago ? '<i class="fas fa-check"></i> Pago' : '<i class="fas fa-clock"></i> Pendente'}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="action-btns">
+                            <button class="btn-action btn-pay ${reg.pago ? 'paid' : ''}" onclick="togglePayment(${reg.id})" title="${reg.pago ? 'Marcar como não pago' : 'Marcar como pago'}">
+                                <i class="fas fa-${reg.pago ? 'undo' : 'check'}"></i>
+                            </button>
+                            <button class="btn-action btn-edit" onclick="openEditModal(${reg.id})" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn-action btn-delete" onclick="openDeleteModal(${reg.id})" title="Excluir">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `}).join('');
+        }
+
+        // Update Statistics
+        function updateStats() {
+            const total = registrations.length;
+            const pagos = registrations.filter(r => r.pago).length;
+            const pendentes = total - pagos;
+            
+            document.getElementById('totalInscritos').textContent = total;
+            document.getElementById('totalPagos').textContent = pagos;
+            document.getElementById('totalPendentes').textContent = pendentes;
+        }
+
+        // Toggle Payment Status
+        function togglePayment(id) {
+            const reg = registrations.find(r => r.id === id);
+            if (reg) {
+                reg.pago = !reg.pago;
+                localStorage.setItem('peniel_registrations', JSON.stringify(registrations));
+                loadRegistrations();
+                updateStats();
+            }
+        }
+
+        // Delete Modal
+        function openDeleteModal(id) {
+            deleteId = id;
+            document.getElementById('deleteModal').classList.add('active');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('active');
+            deleteId = null;
+        }
+
+        function confirmDelete() {
+            if (deleteId) {
+                registrations = registrations.filter(r => r.id !== deleteId);
+                localStorage.setItem('peniel_registrations', JSON.stringify(registrations));
+                loadRegistrations();
+                updateStats();
+                closeDeleteModal();
+            }
+        }
+
+        // Edit Modal
+        function openEditModal(id) {
+            const reg = registrations.find(r => r.id === id);
+            if (reg) {
+                document.getElementById('editId').value = reg.id;
+                document.getElementById('editNome').value = reg.nome;
+                document.getElementById('editTurma').value = reg.turma;
+                document.getElementById('editTelefone').value = reg.telefone;
+                document.getElementById('editComPar').value = reg.comPar;
+                document.getElementById('editBebida').value = reg.bebida;
+                document.getElementById('editMotivacao').value = reg.motivacao;
+                document.getElementById('editObservacoes').value = reg.observacoes;
+                document.getElementById('editModal').classList.add('active');
+            }
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').classList.remove('active');
+        }
+
+        // Edit Form Submit
+        document.getElementById('editForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const id = parseInt(document.getElementById('editId').value);
+            const reg = registrations.find(r => r.id === id);
+            
+            if (reg) {
+                reg.nome = document.getElementById('editNome').value;
+                reg.turma = document.getElementById('editTurma').value;
+                reg.telefone = document.getElementById('editTelefone').value;
+                reg.comPar = document.getElementById('editComPar').value;
+                reg.bebida = document.getElementById('editBebida').value;
+                reg.motivacao = document.getElementById('editMotivacao').value;
+                reg.observacoes = document.getElementById('editObservacoes').value;
+                
+                localStorage.setItem('peniel_registrations', JSON.stringify(registrations));
+                loadRegistrations();
+                closeEditModal();
+            }
+        });
+
+        // Search Function
+        function searchRegistrations() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('#registrationsTableBody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        }
+
+        // Escape HTML
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Close modals on outside click
+        document.querySelectorAll('.modal-overlay').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -9,6 +9,9 @@
     <!-- jsPDF and autoTable -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <style>
         :root {
             --primary: #6366f1;
@@ -987,6 +990,34 @@
             0%, 100% { opacity: 1; }
             50% { opacity: 0.3; }
         }
+
+        /* Status de conexão */
+        .connection-status {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            z-index: 9998;
+            transition: all 0.3s ease;
+        }
+
+        .connection-status.online {
+            background: rgba(16, 185, 129, 0.9);
+            color: white;
+        }
+
+        .connection-status.offline {
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+        }
+
+        .connection-status.connecting {
+            background: rgba(245, 158, 11, 0.9);
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -1004,6 +1035,11 @@
         <button class="close-alert" onclick="closeNewRegistrationAlert()">×</button>
         <h4><i class="fas fa-bell"></i> Nova Inscrição!</h4>
         <p id="newRegistrationText">Alguém acabou de se inscrever</p>
+    </div>
+
+    <!-- STATUS DE CONEXÃO -->
+    <div id="connectionStatus" class="connection-status connecting">
+        <i class="fas fa-sync fa-spin"></i> Conectando...
     </div>
 
     <div class="container">
@@ -1182,7 +1218,7 @@
                 <h2 class="admin-title">
                     <i class="fas fa-cog"></i>
                     Painel de Administração
-                    <span class="live-indicator">Sincronização em Tempo Real</span>
+                    <span class="live-indicator">Tempo Real Ativo</span>
                 </h2>
                 <div class="admin-stats">
                     <div class="stat-card">
@@ -1360,64 +1396,113 @@
         const ADMIN_PASSWORD = 'walker54';
 
         // Data storage
-        let registrations = JSON.parse(localStorage.getItem('peniel_registrations')) || [];
+        let registrations = [];
         let deleteId = null;
         let currentSort = { field: null, direction: 'asc' };
         let isAdminPanelOpen = false;
-        let lastKnownCount = registrations.length;
-        let syncInterval = null;
+        let firebaseConnected = false;
+
+        // Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyARCRPPIrHsOi15py8-3jdO0n5jU61z1c8",
+  authDomain: "peniel-festa-2026.firebaseapp.com",
+  databaseURL: "https://peniel-festa-2026-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "peniel-festa-2026",
+  storageBucket: "peniel-festa-2026.firebasestorage.app",
+  messagingSenderId: "596690254656",
+  appId: "1:596690254656:web:82e663eaeaf4527613d8a5"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+
+        // Inicializar Firebase
+        let database;
+        let registrationsRef;
+
+        function initFirebase() {
+            try {
+                firebase.initializeApp(firebaseConfig);
+                database = firebase.database();
+                registrationsRef = database.ref('registrations');
+                firebaseConnected = true;
+                updateConnectionStatus('online');
+                
+                // Escutar mudanças em tempo real
+                registrationsRef.on('value', (snapshot) => {
+                    const data = snapshot.val();
+                    registrations = data ? Object.values(data) : [];
+                    handleDataUpdate();
+                });
+                
+            } catch (error) {
+                console.error('Erro Firebase:', error);
+                updateConnectionStatus('offline');
+                // Fallback para localStorage
+                loadFromLocalStorage();
+            }
+        }
+
+        // Fallback: usar localStorage se Firebase falhar
+        function loadFromLocalStorage() {
+            registrations = JSON.parse(localStorage.getItem('peniel_registrations')) || [];
+            handleDataUpdate();
+            
+            // Tentar reconectar a cada 10 segundos
+            setTimeout(() => {
+                if (!firebaseConnected) {
+                    location.reload(); // Recarregar para tentar novamente
+                }
+            }, 10000);
+        }
+
+        // Atualizar status de conexão visual
+        function updateConnectionStatus(status) {
+            const statusEl = document.getElementById('connectionStatus');
+            statusEl.className = 'connection-status ' + status;
+            
+            if (status === 'online') {
+                statusEl.innerHTML = '<i class="fas fa-wifi"></i> Conectado (Tempo Real)';
+                setTimeout(() => {
+                    statusEl.style.opacity = '0';
+                }, 3000);
+            } else if (status === 'offline') {
+                statusEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Offline - Usando Local';
+            } else {
+                statusEl.innerHTML = '<i class="fas fa-sync fa-spin"></i> Conectando...';
+            }
+        }
+
+        // Quando dados são atualizados do Firebase
+        function handleDataUpdate() {
+            updateParticipantCount();
+            
+            if (isAdminPanelOpen) {
+                loadRegistrations();
+                updateStats();
+                
+                // Verificar se é uma nova inscrição (últimos 5 segundos)
+                const recentRegs = registrations.filter(r => {
+                    const regTime = new Date(r.data).getTime();
+                    const now = Date.now();
+                    return (now - regTime) < 5000; // 5 segundos
+                });
+                
+                if (recentRegs.length > 0 && document.visibilityState === 'visible') {
+                    showNewRegistrationNotification(recentRegs);
+                }
+            }
+        }
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
-            updateParticipantCount();
-            startRealtimeSync();
-            
-            // Escutar mudanças no localStorage de outras abas/janelas
-            window.addEventListener('storage', handleStorageChange);
+            initFirebase();
         });
-
-        // SINCRONIZAÇÃO EM TEMPO REAL
-        function startRealtimeSync() {
-            // Verificar a cada 3 segundos se há novas inscrições
-            syncInterval = setInterval(() => {
-                checkForNewRegistrations();
-            }, 3000);
-        }
-
-        // Verificar novas inscrições
-        function checkForNewRegistrations() {
-            const currentData = JSON.parse(localStorage.getItem('peniel_registrations')) || [];
-            const currentCount = currentData.length;
-            
-            // Se há mais inscrições do que sabíamos
-            if (currentCount > lastKnownCount) {
-                const newRegistrations = currentData.slice(lastKnownCount);
-                
-                // Atualizar dados locais
-                registrations = currentData;
-                lastKnownCount = currentCount;
-                
-                // Se estiver no painel admin, atualizar a tabela
-                if (isAdminPanelOpen) {
-                    loadRegistrations();
-                    updateStats();
-                    showNewRegistrationNotification(newRegistrations);
-                }
-                
-                // Atualizar contador na página principal também
-                updateParticipantCount();
-            } else if (currentCount !== lastKnownCount || JSON.stringify(registrations) !== JSON.stringify(currentData)) {
-                // Se houve alterações (edições, exclusões, pagamentos)
-                registrations = currentData;
-                lastKnownCount = currentCount;
-                
-                if (isAdminPanelOpen) {
-                    loadRegistrations();
-                    updateStats();
-                }
-                updateParticipantCount();
-            }
-        }
 
         // Notificação de nova inscrição
         function showNewRegistrationNotification(newRegs) {
@@ -1433,9 +1518,6 @@
             
             alert.classList.add('show');
             
-            // Som de notificação (opcional - descomente se quiser)
-            // playNotificationSound();
-            
             // Auto-fechar após 8 segundos
             setTimeout(() => {
                 closeNewRegistrationAlert();
@@ -1444,23 +1526,6 @@
 
         function closeNewRegistrationAlert() {
             document.getElementById('newRegistrationAlert').classList.remove('show');
-        }
-
-        // Evento storage - quando outra aba/janela modifica o localStorage
-        function handleStorageChange(e) {
-            if (e.key === 'peniel_registrations') {
-                checkForNewRegistrations();
-            }
-        }
-
-        // Broadcast Channel para sincronização entre abas (API moderna)
-        if (typeof BroadcastChannel !== 'undefined') {
-            const bc = new BroadcastChannel('peniel_sync');
-            bc.onmessage = function(event) {
-                if (event.data.type === 'new_registration') {
-                    checkForNewRegistrations();
-                }
-            };
         }
 
         // Format date and time
@@ -1501,32 +1566,37 @@
                 data: now.toISOString()
             };
 
-            // Adicionar nova inscrição
+            // Salvar no Firebase (ou localStorage como fallback)
+            if (firebaseConnected && registrationsRef) {
+                registrationsRef.child(registration.id).set(registration)
+                    .then(() => {
+                        showSuccessMessage(now);
+                    })
+                    .catch((error) => {
+                        console.error('Erro ao salvar:', error);
+                        // Fallback para localStorage
+                        saveToLocal(registration);
+                    });
+            } else {
+                saveToLocal(registration);
+            }
+        });
+
+        function saveToLocal(registration) {
             registrations.push(registration);
             localStorage.setItem('peniel_registrations', JSON.stringify(registrations));
-            
-            // Notificar outras abas via BroadcastChannel
-            if (typeof BroadcastChannel !== 'undefined') {
-                const bc = new BroadcastChannel('peniel_sync');
-                bc.postMessage({ type: 'new_registration', data: registration });
-            }
-            
-            // Atualizar timestamp de última modificação
-            localStorage.setItem('peniel_last_update', Date.now().toString());
-            
-            // Show success message
+            showSuccessMessage(new Date(registration.data));
+        }
+
+        function showSuccessMessage(now) {
             alert('Inscrição realizada com sucesso! 🎉\n\nData: ' + formatDateTime(now.toISOString()).date + ' às ' + formatDateTime(now.toISOString()).time);
-            e.target.reset();
+            document.getElementById('registrationForm').reset();
             updateParticipantCount();
-            
-            // Atualizar contador interno
-            lastKnownCount = registrations.length;
-        });
+        }
 
         // Update participant count
         function updateParticipantCount() {
-            const currentData = JSON.parse(localStorage.getItem('peniel_registrations')) || [];
-            document.getElementById('participantCount').textContent = currentData.length + ' inscritos';
+            document.getElementById('participantCount').textContent = registrations.length + ' inscritos';
         }
 
         // Login Modal
@@ -1559,10 +1629,6 @@
             document.getElementById('mainPage').style.display = 'none';
             document.getElementById('adminPanel').classList.add('active');
             isAdminPanelOpen = true;
-            
-            // Sincronizar imediatamente ao abrir
-            registrations = JSON.parse(localStorage.getItem('peniel_registrations')) || [];
-            lastKnownCount = registrations.length;
             
             loadRegistrations();
             updateStats();
@@ -1794,16 +1860,15 @@
             const reg = registrations.find(r => r.id === id);
             if (reg) {
                 reg.pago = !reg.pago;
-                localStorage.setItem('peniel_registrations', JSON.stringify(registrations));
-                localStorage.setItem('peniel_last_update', Date.now().toString());
+                
+                if (firebaseConnected && registrationsRef) {
+                    registrationsRef.child(id).update({ pago: reg.pago });
+                } else {
+                    localStorage.setItem('peniel_registrations', JSON.stringify(registrations));
+                }
+                
                 loadRegistrations();
                 updateStats();
-                
-                // Notificar outras abas
-                if (typeof BroadcastChannel !== 'undefined') {
-                    const bc = new BroadcastChannel('peniel_sync');
-                    bc.postMessage({ type: 'update' });
-                }
             }
         }
 
@@ -1820,19 +1885,16 @@
 
         function confirmDelete() {
             if (deleteId) {
-                registrations = registrations.filter(r => r.id !== deleteId);
-                localStorage.setItem('peniel_registrations', JSON.stringify(registrations));
-                localStorage.setItem('peniel_last_update', Date.now().toString());
+                if (firebaseConnected && registrationsRef) {
+                    registrationsRef.child(deleteId).remove();
+                } else {
+                    registrations = registrations.filter(r => r.id !== deleteId);
+                    localStorage.setItem('peniel_registrations', JSON.stringify(registrations));
+                }
+                
                 loadRegistrations();
                 updateStats();
-                lastKnownCount = registrations.length;
                 closeDeleteModal();
-                
-                // Notificar outras abas
-                if (typeof BroadcastChannel !== 'undefined') {
-                    const bc = new BroadcastChannel('peniel_sync');
-                    bc.postMessage({ type: 'update' });
-                }
             }
         }
 
@@ -1872,16 +1934,14 @@
                 reg.motivacao = document.getElementById('editMotivacao').value;
                 reg.observacoes = document.getElementById('editObservacoes').value;
                 
-                localStorage.setItem('peniel_registrations', JSON.stringify(registrations));
-                localStorage.setItem('peniel_last_update', Date.now().toString());
+                if (firebaseConnected && registrationsRef) {
+                    registrationsRef.child(id).update(reg);
+                } else {
+                    localStorage.setItem('peniel_registrations', JSON.stringify(registrations));
+                }
+                
                 loadRegistrations();
                 closeEditModal();
-                
-                // Notificar outras abas
-                if (typeof BroadcastChannel !== 'undefined') {
-                    const bc = new BroadcastChannel('peniel_sync');
-                    bc.postMessage({ type: 'update' });
-                }
             }
         });
 
@@ -1915,3 +1975,4 @@
     </script>
 </body>
 </html>
+
